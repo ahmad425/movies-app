@@ -1,0 +1,36 @@
+volumes:
+  postgres_data: {}
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies_development
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data
+    ports: 
+      - "5432:5432"
+  
+  app:
+    build: 
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    image: movies
+    depends_on: 
+      - postgres
+    ports: 
+      - 3000:3000
+    
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      args:
+        RAILS_ENV: ${RAILS_ENV:-development}
+    depends_on:
+      - app
+    ports:
+      - 3000:3000
