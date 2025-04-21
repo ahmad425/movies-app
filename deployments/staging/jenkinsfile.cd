@@ -3,8 +3,8 @@ pipeline {
   environment {
     GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     BRANCH = 'master'
-    AWS_ACCOUNT_ID = '462165208743'
-    AWS_DEFAULT_REGION = 'eu-north-1'
+    AWS_ACCOUNT_ID = '303437664068'
+    AWS_DEFAULT_REGION = 'us-east-1'
     IMAGE_TAG="${GIT_COMMIT_SHORT}"
     IMAGE_REPO_NAME = 'movies-app'
   }
@@ -21,7 +21,7 @@ pipeline {
     stage('Logging into ECR') {
       steps {
         script {
-          sh "aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.eu-north-1.amazonaws.com"
+          sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
         }
       }
     }
