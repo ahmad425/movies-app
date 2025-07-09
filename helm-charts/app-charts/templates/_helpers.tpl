@@ -1,3 +1,7 @@
+{{- define "generic-app.name" -}}
+{{- default "%s" .Values.project | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "generic-app.fullname" -}}
   {{- $globalScope := index . 0 }}
   {{- $componentName := index . 1 }}
@@ -10,7 +14,7 @@
 
 
 {{- define "generic-app.labels" -}}
-  app.kubernetes.io/name: {{ "%s" .Values.project | trunc 63 | trimSuffix "-" | quote }}
+  app.kubernetes.io/name: {{ include "generic-app.name" $ | quote }}
   helm.sh/chart: {{ printf "%s-%s" "generic-app" .Chart.Version | quote  }}
   app.kubernetes.io/instance: {{ .Release.Name | quote }}
   app.kubernetes.io/part-of: {{ .Release.Name | quote }}
