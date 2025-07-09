@@ -6,18 +6,18 @@ metadata:
   namespace: {{ $.Release.Namespace | quote }}
   labels: 
     {{- include "generic-app.labels" $ | nindent 4 }}
-    app.kubernetes.io/component: {{ $componentName | qoute }}
+    app.kubernetes.io/component: {{ $componentName | quote }}
 spec: 
   replicas: {{ $deploymentValues.replicas.replicaCount }}
   selector:
     matchLabels: 
       {{- include "generic-app.labels" $ | nindent 6 }}
-      app.kubernetes.io/component: {{ $componentName | qoute }}
+      app.kubernetes.io/component: {{ $componentName | quote }}
   template: 
     metadata: 
       labels: 
         {{- include "generic-app.labels" $ | nindent 8 }}
-        app.kubernetes.io/component: {{ $componentName | qoute }}
+        app.kubernetes.io/component: {{ $componentName | quote }}
     spec: 
       containers: 
         - name: {{ include "generic-app.fullname" (list $ $componentName) }}
