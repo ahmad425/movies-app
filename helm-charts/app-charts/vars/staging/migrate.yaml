@@ -1,0 +1,24 @@
+project: "movies"
+image:
+  repository: 303437664068.dkr.ecr.us-east-1.amazonaws.com/movies-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+job: 
+  db-migrate:
+    hooks:
+      hook: "pre-install,pre-upgrade"
+      hook-delete-policy: "before-hook-creation,hook-succeeded"
+    args:
+      - bundle
+      - exec
+      - rails
+      - db:migrate
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+        

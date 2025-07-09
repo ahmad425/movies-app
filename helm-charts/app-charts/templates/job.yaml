@@ -1,0 +1,32 @@
+{{- range $componentName, $jobValues := .Values.job }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "generic-app.fullname" (list $ $componentName) }}
+  namespace: {{ $.Release.Namespace | quote }}
+  annotations:
+    {{- range $hook, $value := $jobValues.hooks }}
+      helm.sh/{{$hook}}: {{ $value | quote }}
+    {{- end }}
+  labels:
+    {{- include "generic-app.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $componentName | quote }}
+spec: 
+  template: 
+    metadata:
+      labels:
+        {{- include "generic-app.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $componentName | quote }}
+    spec: 
+      restartPolicy: Never
+      containers:
+        - name: {{ include "generic-app.fullname" (list $ $componentName) }}
+        image: "{{ $jobValues.image.repository }}:{{ $jobValues.image.tag }}"
+        imagePullPolicy: {{ $jobValues.image.pullPolicy }}
+        {{- if $jobValues.args }}
+          args:
+          {{- toYaml $jobValues.args | nindent 12 }}
+        {{- end }}
+        resources:
+            {{- toYaml $jobValues.resources | nindent 12 }}
+{{- end}}

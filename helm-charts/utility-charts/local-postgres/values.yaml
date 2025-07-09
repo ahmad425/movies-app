@@ -1,0 +1,18 @@
+service:
+  name: local-postgres
+  type: ClusterIP
+  port: 5432
+  annotations: {}
+
+replicaCount: 1
+
+storage:
+  size: 10Gi
+
+image:
+  repository: postgres
+  tag: 16.0
+
+postgresql:
+  database: movies_production
+  existingSecretKey: postgres-password

@@ -40,5 +40,62 @@ pipeline {
         }
       }
     }
+    stage('Linting Helm Charts') {
+      steps {
+        script {
+          dir("helm-charts/app-charts") {
+            sh """
+              helm kubeconform . -n movies-staging \
+              -f values.yaml \
+              -f vars/staging/server.yaml \
+              --set image.tag='${IMAGE_TAG}' --set environmentVariables.REVISION='${IMAGE_TAG}' \
+              --schema-location default --schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+            """
+          }
+        }
+      }
+    }
+    stage('Deploy Helm Charts') {
+      when {
+        not {
+          expression { sh(returnStdout: true, script: """
+              cd helm-charts/app-charts && \
+              helm diff upgrade app . -n movies-staging \
+              -f values.yaml \
+              -f vars/staging/server.yaml \
+              --set image.tag='${IMAGE_TAG}' --set environmentVariables.REVISION='${IMAGE_TAG}' \
+              --allow-unreleased --three-way-merge
+          """).trim().isEmpty() }
+        }
+      }
+      steps {
+        script {
+          dir("helm-charts/app-charts") {
+            sh """
+                helm upgrade --install app . -n movies-staging \
+                -f values.yaml \
+                -f vars/staging/server.yaml \
+                --set image.tag='${IMAGE_TAG}'  --set environmentVariables.REVISION='${IMAGE_TAG}' \
+                --install --wait --timeout 600s
+            """
+          }
+        }
+      }
+    }
+    stage('Update Services') {
+      steps {
+        script {
+          def labels = sh(returnStdout: true, script: """kubectl get deploy -n movies-staging \
+              -l 'app.kubernetes.io/component=server,app.kubernetes.io/instance=app' \
+              --show-labels --no-headers | awk '{print \$(NF)}'
+          """).trim()
+          def service_name = sh(returnStdout: true, script: """kubectl get service -n movies-staging \
+              -l 'app.kubernetes.io/component=fullstack,app.kubernetes.io/name=movies-fullstack-config' \
+              -o jsonpath='{.items[*].metadata.name}'
+          """).trim()
+          sh "kubectl set selector service '${service_name}' -n movies-staging '${labels}'"
+        }
+      }
+    }
   }
 }

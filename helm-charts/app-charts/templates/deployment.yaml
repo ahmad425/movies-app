@@ -1,0 +1,37 @@
+{{- range $deploymentComponent, $deploymentValues := .Values.deployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "generic-app.fullname" (list $ $componentName) }}
+  namespace: {{ $.Release.Namespace | quote }}
+  labels: 
+    {{- include "generic-app.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $componentName | qoute }}
+spec: 
+  replicas: {{ $deploymentValues.replicas.replicaCount }}
+  selector:
+    matchLabels: 
+      {{- include "generic-app.labels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $componentName | qoute }}
+  template: 
+    metadata: 
+      labels: 
+        {{- include "generic-app.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $componentName | qoute }}
+    spec: 
+      containers: 
+        - name: {{ include "generic-app.fullname" (list $ $componentName) }}
+          image: "{{ $deploymentValues.image.repository }}:{{ $deploymentValues.image.tag }}"
+          imagePullPolicy: {{ $deploymentValues.image.pullPolicy }}
+          {{- if $deploymentValues.args }}
+            args: 
+              {{- toYaml $deploymentValues.args | nindent 12 }}
+          {{- end }}
+          ports: 
+            - name: http
+              protocol: TCP
+              containerPort: {{ $deploymentValues.service.port }}
+          resources: 
+            {{- toYaml $deploymentValues.resources | nindent 12 }}
+{{- end }}
+            

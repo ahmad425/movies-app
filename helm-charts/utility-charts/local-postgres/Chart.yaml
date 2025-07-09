@@ -1,0 +1,6 @@
+apiVersion: v2
+name: local-postgres
+description: Prepackage stateful Postgres instance
+type: application
+version: 1.0.0
+appVersion: "15.3"
