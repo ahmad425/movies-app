@@ -21,8 +21,8 @@ spec:
     spec: 
       containers: 
         - name: {{ include "generic-app.fullname" (list $ $componentName) }}
-          image: "{{ $deploymentValues.image.repository }}:{{ $deploymentValues.image.tag }}"
-          imagePullPolicy: {{ $deploymentValues.image.pullPolicy }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           {{- if $deploymentValues.args }}
             args: 
               {{- toYaml $deploymentValues.args | nindent 12 }}
