@@ -24,8 +24,8 @@ spec:
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           {{- if $deploymentValues.args }}
-            args: 
-              {{- toYaml $deploymentValues.args | nindent 12 }}
+          args: 
+            {{- toYaml $deploymentValues.args | nindent 12 }}
           {{- end }}
           ports: 
             - name: http
