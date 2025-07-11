@@ -15,12 +15,12 @@ deployment:
       - -c
       - "config/puma.rb"
     resources:
-      limits:
-        cpu: 500m
-        memory: 512Mi
       requests:
         cpu: 250m
         memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
     service:
       type: ClusterIP
       port: 3000

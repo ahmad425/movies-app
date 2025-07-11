@@ -14,12 +14,12 @@
 
 
 {{- define "generic-app.labels" -}}
-  app.kubernetes.io/name: {{ include "generic-app.name" $ | quote }}
-  helm.sh/chart: {{ printf "%s-%s" "generic-app" .Chart.Version | quote  }}
-  app.kubernetes.io/instance: {{ .Release.Name | quote }}
-  app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-  app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-  {{- if .Chart.AppVersion }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-  {{- end }}
+app.kubernetes.io/name: {{ include "generic-app.name" $ | quote }}
+helm.sh/chart: {{ printf "%s-%s" "generic-app" .Chart.Version | quote }}
+app.kubernetes.io/instance: {{ .Release.Name | quote }}
+app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 {{- end -}}
